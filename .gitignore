@@ -48,3 +48,5 @@ maps/dist
 maps/.cache
 *.cache
 
+# Database
+db*.json
