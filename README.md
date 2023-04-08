@@ -91,10 +91,69 @@ To add flexibility to interfaces regarding the optional nature of some instances
 interface UserProps {
   name?: string;
   age?: number;
-}
+};
 ```
 
 
+# Prettier and ESLint
+
+## Install dependencies
+
+```
+npm install --save-dev eslint prettier eslint-plugin-prettier eslint-config-prettier @typescript-eslint/eslint-plugin @typescript-eslint/parser
+````
+
+## Create .prettierrc
+
+```JSON
+{
+  "singleQuote": true,
+  "trailingComma": "all",
+  "printWidth": 80,
+  "tabWidth": 2,
+  "semi": true
+}
+```
+
+## Create .eslintrc.json
+
+```JSON
+{
+  "parser": "@typescript-eslint/parser",
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier",
+    "plugin:prettier/recommended"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module"
+  },
+  "rules": {
+    "prettier/prettier": "error"
+  },
+  "plugins": ["@typescript-eslint"]
+}
+```
+
+## Add scripts to package.json
+
+```JSON
+{
+  "scripts": {
+    "lint": "eslint 'src/**/*.{js,ts}'",
+    "format": "prettier --write 'src/**/*.{js,ts}'"
+  }
+}
+```
+
+## Run commands
 
 
+To format your code with Prettier, run: 
+* ```npm run format```
 
+To lint your code with ESLint
+
+* ```run: npm run lint```
