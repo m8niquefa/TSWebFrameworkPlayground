@@ -1,9 +1,14 @@
+import { UserForm } from './views/UserForm';
 import { User } from './models/User';
 
-const user = new User({ id: 1, name: 'newer name', age: 0 });
+const user = User.buildUser({ name: 'Some OTher name', age: 20 });
 
-user.on('save', () => {
-  console.log(user);
-});
+const rootElement = document.getElementById('root');
+if(rootElement) {
+  console.log(rootElement);
+  const userForm = new UserForm(rootElement, user);
+  userForm.render();  
+} else {
+  throw new Error('Root element not found');
+}
 
-user.save();

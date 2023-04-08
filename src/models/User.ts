@@ -1,61 +1,34 @@
-import { AxiosResponse } from "axios";
-import { Attributes } from "./Attributes";
-import { Eventing } from "./Eventing";
-import { Sync } from "./Sync";
+import { Model } from './Model';
+import { Attributes } from './Attributes';
+import { Eventing } from './Eventing';
+import { Collection } from './Collection';
+import { Sync } from './Sync';
 
 export interface UserProps {
   id?: number;
   name?: string;
   age?: number;
 }
-const rootURL = "http://localhost:3000/users";
 
-export class User {
-  public events: Eventing = new Eventing();
-  public sync: Sync<UserProps> = new Sync<UserProps>(rootURL);
-  public attributes: Attributes<UserProps>;
+const rootUrl = 'http://localhost:3000/users';
 
-  constructor(attrs: UserProps) {
-    this.attributes = new Attributes<UserProps>(attrs);
+export class User extends Model<UserProps> {
+  static buildUser(attrs: UserProps): User {
+    console.log(`User.buildUser called with attrs: ${JSON.stringify(attrs)}`)
+    return new User(
+      new Attributes<UserProps>(attrs),
+      new Eventing(),
+      new Sync<UserProps>(rootUrl)
+    );
   }
 
-  get on() {
-    return this.events.on;
+  static buildUserCollection(): Collection<User, UserProps> {
+    return new Collection<User, UserProps>(rootUrl, (json: UserProps) =>
+      User.buildUser(json)
+    );
   }
 
-  get trigger() {
-    return this.events.trigger;
-  }
-
-  get get() {
-    return this.attributes.get;
-  }
-
-  set(update: UserProps): void {
-    this.attributes.set(update);
-    this.events.trigger("change");
-  }
-
-  fetch(): void {
-    const id = this.attributes.get("id");
-
-    if (typeof id !== "number") {
-      throw new Error("Cannot fetch without an id");
-    }
-
-    this.sync.fetch(id).then((response: AxiosResponse): void => {
-      this.attributes.set(response.data);
-    });
-  }
-
-  save(): void {
-    this.sync
-      .save(this.attributes.getAll())
-      .then((response: AxiosResponse): void => {
-        this.trigger("save");
-      })
-      .catch(() => {
-        this.trigger("error");
-      });
+  setRandomAge(): void {
+    this.set({ age: Math.round(Math.random() * 100) });
   }
 }
